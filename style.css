@@ -109,7 +109,7 @@ body {
   margin-bottom: 10px;
 }
 
-#itemList li button {
+.deleteButton {
   width: 80px;
   padding: 8px;
   margin-left: 10px;
