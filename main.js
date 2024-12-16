@@ -6,7 +6,6 @@ const resultDisplay = document.getElementById("resultDisplay");
 const addItemButton = document.getElementById("addItemButton");
 const itemInput = document.getElementById("itemInput");
 const itemList = document.getElementById("itemList");
-let deleteButtons;
 
 let items = [];
 let availableColors = [
@@ -19,7 +18,7 @@ let spinSpeed = 0;
 
 
 // ルーレット描画関数
-function drawRoulette(startAngle, startButtonDisabled, stopButtonDisabled, addItemButtonDisabled, deleteButtonDisabled, resultDisplayText) {
+function drawRoulette(startAngle, startButtonDisabled, stopButtonDisabled, addItemButtonDisabled, itemListPointerEvents, resultDisplayText) {
   const radius = canvas.width / 2;
   const arcSize = (2 * Math.PI) / items.length;
 
@@ -48,9 +47,7 @@ function drawRoulette(startAngle, startButtonDisabled, stopButtonDisabled, addIt
   startButton.disabled = startButtonDisabled;
   stopButton.disabled = stopButtonDisabled;
   addItemButton.disabled = addItemButtonDisabled;
-  deleteButtons.forEach(deleteButton => {
-    deleteButton.disabled = deleteButtonDisabled;
-  });
+  itemList.style.pointerEvents = itemListPointerEvents;
   resultDisplay.textContent = resultDisplayText;
 }
 
@@ -60,7 +57,7 @@ function drawRoulette(startAngle, startButtonDisabled, stopButtonDisabled, addIt
 function spinRogueRoulette(startAngle, targetIndex, targetAngle, totalAngle, decrement, minSpeed, stopSpin, flag, spinTimeout) {
   if (spinSpeed < minSpeed) {
     clearTimeout(spinTimeout);
-    drawRoulette(startAngle, false, true, false, false, `lucky : ${items[targetIndex].name}`);
+    drawRoulette(startAngle, false, true, false, "auto", `lucky : ${items[targetIndex].name}`);
     return;
   }
 
@@ -69,7 +66,7 @@ function spinRogueRoulette(startAngle, targetIndex, targetAngle, totalAngle, dec
     stopSpin = true;
   });
 
-  const currentAngle = (startAngle + targetAngle + totalAngle) % (2 * Math.PI);
+  let currentAngle = (startAngle + targetAngle + totalAngle) % (2 * Math.PI);
   if (stopSpin) {
     if (currentAngle > (2 * Math.PI - 0.02) || currentAngle < 0.02) {
       flag = true;
@@ -81,7 +78,7 @@ function spinRogueRoulette(startAngle, targetIndex, targetAngle, totalAngle, dec
   }
 
   startAngle += spinSpeed;
-  drawRoulette(startAngle, true, false, true, true, "");
+  drawRoulette(startAngle, true, false, true, "none", "");
   spinTimeout = requestAnimationFrame(() => 
     spinRogueRoulette(startAngle, targetIndex, targetAngle, totalAngle, decrement, minSpeed, stopSpin, flag, spinTimeout));
 }
@@ -134,8 +131,7 @@ addItemButton.addEventListener("click", () => {
   addItem(itemInput.value, color);
 
   itemInput.value = "";
-  deleteButtons = document.querySelectorAll(".deleteButton");
-  drawRoulette(0, false, true, false, false, "");
+  drawRoulette(0, false, true, false, "auto", "");
 });
 
 
@@ -153,7 +149,7 @@ function addItem(name, color) {
       items.splice(index, 1);
       availableColors.push(color);
       li.remove();
-      drawRoulette(0, false, true, false, false, "");
+      drawRoulette(0, false, true, false, "auto", "");
     }
   });
 
